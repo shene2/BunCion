@@ -1,0 +1,101 @@
+/* GENERAL */
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: #fff7f2;
+    color: #4a4a4a;
+}
+
+/* NAVBAR */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 40px;
+    background: #f7c8e0;
+    border-radius: 0 0 20px 20px;
+}
+
+.logo {
+    margin: 0;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+}
+
+.nav-links li {
+    cursor: pointer;
+}
+
+/* HERO */
+.hero {
+    text-align: center;
+    padding: 80px 20px;
+}
+
+.hero h2 {
+    font-size: 2.5rem;
+}
+
+.btn {
+    margin-top: 20px;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 20px;
+    background: #cdb4db;
+    color: white;
+    cursor: pointer;
+}
+
+/* CATEGORIES */
+.categories {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 40px;
+}
+
+.category {
+    background: #f7c8e0;
+    padding: 20px 30px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+/* CARDS */
+.cards {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 20px;
+    width: 200px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.card img {
+    width: 100%;
+    border-radius: 10px;
+}
+
+/* SECTIONS */
+.featured, .tips {
+    padding: 40px;
+    text-align: center;
+}
+
+/* FOOTER */
+footer {
+    text-align: center;
+    padding: 20px;
+    background: #f7c8e0;
+    border-radius: 20px 20px 0 0;
+}
