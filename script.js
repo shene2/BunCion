@@ -1,8 +1,8 @@
-// NAVIGATION SCROLL
-document.querySelectorAll(".nav-links li").forEach((item, index) => {
+// SMOOTH NAVIGATION USING DATA ATTRIBUTE
+document.querySelectorAll(".nav-links li").forEach(item => {
     item.addEventListener("click", () => {
-        const sections = ["hero", "featured", "tips", "footer"];
-        document.querySelector(`.${sections[index]}`).scrollIntoView({
+        const section = item.getAttribute("data-section");
+        document.querySelector(`.${section}`).scrollIntoView({
             behavior: "smooth"
         });
     });
@@ -15,9 +15,15 @@ document.querySelector(".btn").addEventListener("click", () => {
     });
 });
 
-// CATEGORY CLICK (basic interaction)
+// CATEGORY INTERACTION (highlight effect)
 document.querySelectorAll(".category").forEach(category => {
     category.addEventListener("click", () => {
-        alert(`Showing ${category.textContent} items 🐰`);
+        category.style.background = "#cdb4db";
+        category.style.color = "white";
+
+        setTimeout(() => {
+            category.style.background = "#f7c8e0";
+            category.style.color = "#4a4a4a";
+        }, 300);
     });
 });
