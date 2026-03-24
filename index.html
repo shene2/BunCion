@@ -1,95 +1,752 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BunCon 🐰</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BunCon 🐰</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --cream: #fdf6ee;
+      --blush: #f5c6c6;
+      --rose: #e8929a;
+      --terracotta: #c0665a;
+      --sage: #8fad8a;
+      --bark: #5c3d2e;
+      --soft-white: #fffaf6;
+      --card-bg: #fff8f4;
+      --shadow: 0 8px 40px rgba(92,61,46,0.10);
+    }
 
-    <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--bark);
+      overflow-x: hidden;
+    }
+
+    /* ── CURSOR ── */
+    body { cursor: none; }
+    #cursor {
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: var(--rose);
+      position: fixed; top: 0; left: 0;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%,-50%);
+      transition: transform 0.12s ease, background 0.2s;
+      mix-blend-mode: multiply;
+    }
+    #cursor.hovered { transform: translate(-50%,-50%) scale(2.5); background: var(--blush); }
+
+    /* ── NOISE TEXTURE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: .5;
+    }
+
+    /* ── NAVBAR ── */
+    .navbar {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.1rem 3rem;
+      background: rgba(253,246,238,0.82);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(200,150,130,0.15);
+      transition: box-shadow 0.3s;
+    }
+    .navbar.scrolled { box-shadow: 0 4px 24px rgba(92,61,46,0.09); }
+
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--terracotta);
+      letter-spacing: -0.5px;
+      cursor: pointer;
+    }
+
+    .nav-links {
+      list-style: none;
+      display: flex; gap: 2.2rem;
+    }
+    .nav-links li {
+      font-size: 0.88rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--bark);
+      cursor: pointer;
+      position: relative;
+      padding-bottom: 2px;
+      transition: color 0.2s;
+    }
+    .nav-links li::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0;
+      width: 0; height: 1.5px;
+      background: var(--rose);
+      transition: width 0.3s ease;
+    }
+    .nav-links li:hover { color: var(--terracotta); }
+    .nav-links li:hover::after { width: 100%; }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 8rem 2rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* floating bunny circles BG */
+    .hero-bg-circle {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.18;
+      animation: floatCircle 8s ease-in-out infinite;
+    }
+    .hero-bg-circle:nth-child(1) { width:420px; height:420px; background:var(--blush); top:-80px; left:-120px; animation-delay:0s; }
+    .hero-bg-circle:nth-child(2) { width:280px; height:280px; background:var(--sage); bottom:80px; right:-60px; animation-delay:-3s; }
+    .hero-bg-circle:nth-child(3) { width:180px; height:180px; background:var(--rose); top:60%; left:10%; animation-delay:-5s; }
+
+    @keyframes floatCircle {
+      0%,100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-28px) scale(1.04); }
+    }
+
+    .hero-eyebrow {
+      font-size: 0.78rem; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--rose); font-weight: 500;
+      margin-bottom: 1rem;
+      opacity: 0; animation: fadeUp 0.8s 0.2s forwards;
+    }
+
+    .hero h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.6rem, 6vw, 5rem);
+      font-weight: 700;
+      line-height: 1.12;
+      color: var(--bark);
+      max-width: 700px;
+      opacity: 0; animation: fadeUp 0.9s 0.35s forwards;
+    }
+
+    .hero h2 em {
+      font-style: italic;
+      color: var(--terracotta);
+    }
+
+    .hero p {
+      margin-top: 1.3rem;
+      font-size: 1.05rem;
+      color: #8a6b5a;
+      max-width: 480px;
+      line-height: 1.7;
+      opacity: 0; animation: fadeUp 0.9s 0.55s forwards;
+    }
+
+    .hero-btns {
+      margin-top: 2.4rem;
+      display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;
+      opacity: 0; animation: fadeUp 0.9s 0.75s forwards;
+    }
+
+    .btn {
+      padding: 0.85rem 2.2rem;
+      border-radius: 100px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: rgba(255,255,255,0.18);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .btn:hover::after { opacity: 1; }
+
+    .btn-primary {
+      background: var(--terracotta);
+      color: #fff;
+      box-shadow: 0 6px 24px rgba(192,102,90,0.35);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(192,102,90,0.45); }
+    .btn-primary:active { transform: translateY(0); }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--terracotta);
+      border: 1.5px solid var(--terracotta);
+    }
+    .btn-outline:hover { background: var(--terracotta); color: #fff; transform: translateY(-2px); }
+
+    /* scroll hint */
+    .scroll-hint {
+      position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      opacity: 0; animation: fadeUp 1s 1.2s forwards;
+    }
+    .scroll-hint span { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: #b09485; }
+    .scroll-arrow {
+      width: 18px; height: 28px;
+      border: 1.5px solid var(--rose);
+      border-radius: 10px;
+      position: relative;
+    }
+    .scroll-arrow::after {
+      content: '';
+      width: 4px; height: 4px;
+      background: var(--rose);
+      border-radius: 50%;
+      position: absolute; top: 5px; left: 50%; transform: translateX(-50%);
+      animation: scrollDot 1.6s ease-in-out infinite;
+    }
+    @keyframes scrollDot {
+      0% { top: 5px; opacity: 1; }
+      80% { top: 14px; opacity: 0; }
+      100% { top: 5px; opacity: 0; }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── SECTION COMMON ── */
+    section { position: relative; z-index: 1; }
+
+    .section-label {
+      font-size: 0.75rem; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--rose); font-weight: 500; margin-bottom: 0.6rem;
+    }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      font-weight: 700; color: var(--bark);
+      line-height: 1.2;
+    }
+
+    /* ── CATEGORIES ── */
+    .categories {
+      padding: 3rem 3rem 2rem;
+      display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;
+    }
+
+    .category {
+      padding: 0.7rem 1.6rem;
+      border-radius: 100px;
+      background: var(--card-bg);
+      border: 1.5px solid rgba(200,140,120,0.2);
+      font-size: 0.9rem; font-weight: 500;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      box-shadow: 0 2px 12px rgba(92,61,46,0.06);
+      user-select: none;
+    }
+    .category:hover, .category.active {
+      background: var(--terracotta);
+      color: #fff;
+      border-color: var(--terracotta);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(192,102,90,0.3);
+    }
+
+    /* ── FEATURED ── */
+    .featured {
+      padding: 4rem 3rem;
+    }
+    .featured-header { margin-bottom: 2.5rem; }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1.6rem;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+      border: 1px solid rgba(200,160,140,0.1);
+      position: relative;
+    }
+    .card:hover { transform: translateY(-8px) rotate(-0.5deg); box-shadow: 0 20px 60px rgba(92,61,46,0.16); }
+    .card.hidden { display: none; }
+
+    .card img {
+      width: 100%; height: 200px;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.5s ease;
+    }
+    .card:hover img { transform: scale(1.06); }
+
+    .card-body { padding: 1.2rem 1.3rem 1.4rem; }
+    .card-body h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem; font-weight: 700;
+      margin-bottom: 0.4rem; color: var(--bark);
+    }
+    .card-body p { font-size: 0.85rem; color: #9a7060; line-height: 1.6; }
+
+    .card-tag {
+      position: absolute; top: 12px; right: 12px;
+      background: rgba(253,246,238,0.92);
+      backdrop-filter: blur(6px);
+      border-radius: 100px;
+      font-size: 0.68rem; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 3px 10px; color: var(--terracotta);
+    }
+
+    .card-btn {
+      display: inline-block;
+      margin-top: 0.9rem;
+      padding: 0.45rem 1.1rem;
+      border-radius: 100px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      background: transparent;
+      color: var(--terracotta);
+      border: 1.5px solid var(--terracotta);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .card-btn:hover { background: var(--terracotta); color: #fff; }
+
+    /* ── TIPS ── */
+    .tips {
+      padding: 4rem 3rem;
+      background: linear-gradient(135deg, #fff0e8 0%, #fde8e8 100%);
+    }
+    .tips-header { margin-bottom: 2.5rem; }
+
+    .tip-card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 2rem 1.8rem;
+      box-shadow: 0 4px 24px rgba(92,61,46,0.07);
+      border: 1px solid rgba(200,160,140,0.12);
+      transition: transform 0.3s, box-shadow 0.3s;
+      cursor: pointer;
+    }
+    .tip-card:hover { transform: translateY(-5px); box-shadow: 0 14px 40px rgba(92,61,46,0.13); }
+
+    .tip-icon { font-size: 2rem; margin-bottom: 0.8rem; display: block; }
+    .tip-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem; font-weight: 700;
+      margin-bottom: 0.5rem; color: var(--bark);
+    }
+    .tip-card p { font-size: 0.87rem; color: #9a7060; line-height: 1.65; }
+
+    /* ── ABOUT / FOOTER ── */
+    .about-strip {
+      padding: 5rem 3rem;
+      text-align: center;
+    }
+    .about-strip .section-title { margin-bottom: 1rem; }
+    .about-strip p { font-size: 1rem; color: #9a7060; max-width: 520px; margin: 0 auto 2rem; line-height: 1.7; }
+
+    .social-row {
+      display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+      margin-top: 1.5rem;
+    }
+    .social-btn {
+      width: 46px; height: 46px;
+      border-radius: 50%;
+      background: var(--card-bg);
+      border: 1.5px solid rgba(200,140,120,0.25);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: all 0.25s;
+      box-shadow: 0 2px 10px rgba(92,61,46,0.07);
+    }
+    .social-btn:hover { background: var(--terracotta); transform: translateY(-3px) scale(1.08); border-color: var(--terracotta); }
+
+    footer {
+      padding: 2rem 3rem;
+      text-align: center;
+      background: var(--bark);
+      color: rgba(255,240,230,0.7);
+      font-size: 0.82rem;
+      letter-spacing: 0.05em;
+    }
+    footer span { color: var(--blush); }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(60px);
+      background: var(--bark);
+      color: #fff8f4;
+      padding: 0.8rem 2rem;
+      border-radius: 100px;
+      font-size: 0.85rem;
+      z-index: 9998;
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(.34,1.56,.64,1);
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(92,61,46,0.45);
+      backdrop-filter: blur(6px);
+      z-index: 1000;
+      display: none; align-items: center; justify-content: center;
+      padding: 2rem;
+    }
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: var(--soft-white);
+      border-radius: 24px;
+      max-width: 420px; width: 100%;
+      padding: 2.5rem;
+      position: relative;
+      box-shadow: 0 30px 80px rgba(92,61,46,0.25);
+      animation: modalIn 0.4s cubic-bezier(.34,1.56,.64,1);
+    }
+    @keyframes modalIn {
+      from { opacity:0; transform: scale(0.85) translateY(30px); }
+      to   { opacity:1; transform: scale(1)   translateY(0); }
+    }
+    .modal-close {
+      position: absolute; top: 1rem; right: 1rem;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--blush);
+      border: none; cursor: pointer;
+      font-size: 1rem; display: flex; align-items: center; justify-content: center;
+      color: var(--terracotta);
+      transition: background 0.2s, transform 0.2s;
+    }
+    .modal-close:hover { background: var(--rose); color: #fff; transform: rotate(90deg); }
+    .modal img { width: 100%; border-radius: 14px; margin-bottom: 1.2rem; }
+    .modal h3 { font-family: 'Playfair Display', serif; font-size: 1.4rem; margin-bottom: 0.5rem; }
+    .modal p { font-size: 0.9rem; color: #9a7060; line-height: 1.7; }
+    .modal-actions { margin-top: 1.4rem; display: flex; gap: 0.8rem; }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal {
+      opacity: 0; transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 700px) {
+      .navbar { padding: 1rem 1.4rem; }
+      .nav-links { gap: 1.2rem; }
+      .featured, .tips, .categories, .about-strip { padding: 3rem 1.4rem; }
+      .hero { padding-top: 7rem; }
+    }
+  </style>
 </head>
-    <script src="script.js"></script>
 <body>
 
-    <!-- NAVBAR -->
-    <<nav class="navbar">
-    <h1 class="logo">BunCon 🐰</h1>
-    <ul class="nav-links">
-        <li data-section="hero">Home</li>
-        <li data-section="featured">Essentials</li>
-        <li data-section="tips">Care</li>
-        <li data-section="footer">About</li>
-    </ul>
+<!-- Custom Cursor -->
+<div id="cursor"></div>
+
+<!-- Toast -->
+<div id="toast">🐰 Added to wishlist!</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modal">
+    <button class="modal-close" id="modalClose">✕</button>
+    <img id="modalImg" src="" alt="" />
+    <div class="section-label" id="modalTag"></div>
+    <h3 id="modalTitle"></h3>
+    <p id="modalDesc"></p>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="addWishlist()">🤍 Wishlist</button>
+      <button class="btn btn-outline" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar">
+  <h1 class="logo" onclick="scrollTo('hero')">BunCon 🐰</h1>
+  <ul class="nav-links">
+    <li onclick="scrollTo('hero')">Home</li>
+    <li onclick="scrollTo('featured')">Essentials</li>
+    <li onclick="scrollTo('tips')">Care</li>
+    <li onclick="scrollTo('about')">About</li>
+  </ul>
 </nav>
 
-    <!-- HERO -->
-    <section class="hero">
-        <h2>Your Bunny’s Cozy Corner 🐰</h2>
-        <p>Discover the best essentials and care tips for your fluffy friend.</p>
-        <button class="btn">Explore Essentials</button>
-    </section>
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-bg-circle"></div>
+  <div class="hero-bg-circle"></div>
+  <div class="hero-bg-circle"></div>
+  <p class="hero-eyebrow">Welcome to BunCon 🐾</p>
+  <h2>Your Bunny's<br/><em>Cozy Corner</em> 🐰</h2>
+  <p>Discover the best essentials, care tips, and adorable finds for your fluffy best friend.</p>
+  <div class="hero-btns">
+    <button class="btn btn-primary" onclick="scrollTo('featured')">Explore Essentials</button>
+    <button class="btn btn-outline" onclick="scrollTo('tips')">Care Tips</button>
+  </div>
+  <div class="scroll-hint">
+    <div class="scroll-arrow"></div>
+    <span>Scroll</span>
+  </div>
+</section>
 
-    <!-- CATEGORIES -->
-    <section class="categories">
-        <div class="category" data-category="food">🥕  Food</div>
-        <div class="category" data-category="toys">🧸 Toys</div>
-        <div class="category" data-category="housing">🏡 Housing</div>
-        <div class="category" data-category="care">🧼 Care</div>
-    </section>
+<!-- CATEGORIES -->
+<section class="categories" id="categories">
+  <div class="category active" data-category="all" onclick="filterCards(this)">🐇 All</div>
+  <div class="category" data-category="food"    onclick="filterCards(this)">🥕 Food</div>
+  <div class="category" data-category="toys"    onclick="filterCards(this)">🧸 Toys</div>
+  <div class="category" data-category="housing" onclick="filterCards(this)">🏡 Housing</div>
+  <div class="category" data-category="fashion" onclick="filterCards(this)">✨ Fashion</div>
+  <div class="category" data-category="care"    onclick="filterCards(this)">🧼 Care</div>
+</section>
 
-    <!-- FEATURED -->
-    <section class="featured">
-        <h2>Featured Essentials</h2>
-        <div class="cards">
+<!-- FEATURED -->
+<section class="featured reveal" id="featured">
+  <div class="featured-header">
+    <p class="section-label">Curated Picks</p>
+    <h2 class="section-title">Featured Essentials</h2>
+  </div>
+  <div class="cards" id="cardGrid">
 
-            <div class="card" data-category="food">
-                <img src="https://i.pinimg.com/1200x/f6/d4/e4/f6d4e44f44e34644e6c7879be9d2cc1e.jpg">
-                <h3>Enternal Care</h3>
-                <p>Essential for digestion and healthy teeth.</p>
-            </div>
+    <div class="card reveal" data-category="food"
+         data-title="Eternal Hay Care"
+         data-desc="Premium Timothy hay — essential for digestion and healthy teeth. Recommended as 80% of daily diet."
+         data-img="https://i.pinimg.com/1200x/f6/d4/e4/f6d4e44f44e34644e6c7879be9d2cc1e.jpg"
+         onclick="openModal(this)">
+      <div class="card-tag">Food</div>
+      <img src="https://i.pinimg.com/1200x/f6/d4/e4/f6d4e44f44e34644e6c7879be9d2cc1e.jpg" alt="Hay" loading="lazy"/>
+      <div class="card-body">
+        <h3>Eternal Hay Care</h3>
+        <p>Essential for digestion and healthy teeth.</p>
+        <button class="card-btn">View Details →</button>
+      </div>
+    </div>
 
-            <div class="card" data-category="toys">
-                <img src="https://i.pinimg.com/1200x/07/25/e0/0725e0ffe97bf2f548326ca5f84c9d67.jpg">
-                <h3>Chew Toy</h3>
-                <p>Keeps your bunny active and happy.</p>
-            </div>
+    <div class="card reveal" data-category="toys"
+         data-title="Bunny Chew Toy"
+         data-desc="Natural wood chew toy set that keeps your bunny mentally stimulated and physically active for hours."
+         data-img="https://i.pinimg.com/1200x/07/25/e0/0725e0ffe97bf2f548326ca5f84c9d67.jpg"
+         onclick="openModal(this)">
+      <div class="card-tag">Toys</div>
+      <img src="https://i.pinimg.com/1200x/07/25/e0/0725e0ffe97bf2f548326ca5f84c9d67.jpg" alt="Chew toy" loading="lazy"/>
+      <div class="card-body">
+        <h3>Chew Toy Bundle</h3>
+        <p>Keeps your bunny active and happy.</p>
+        <button class="card-btn">View Details →</button>
+      </div>
+    </div>
 
-            <div class="card" data-category="housing">
-                <img src="https://i.pinimg.com/1200x/f3/ad/22/f3ad22eaa49d3f370798ba57d49475d7.jpg">
-                <h3>Cozy Habitat</h3>
-                <p>A safe and comfy space for your bunny.</p>
-            </div>
+    <div class="card reveal" data-category="housing"
+         data-title="Cozy Habitat"
+         data-desc="Spacious and ventilated bunny habitat with soft bedding inserts, perfect for indoor living."
+         data-img="https://i.pinimg.com/1200x/f3/ad/22/f3ad22eaa49d3f370798ba57d49475d7.jpg"
+         onclick="openModal(this)">
+      <div class="card-tag">Housing</div>
+      <img src="https://i.pinimg.com/1200x/f3/ad/22/f3ad22eaa49d3f370798ba57d49475d7.jpg" alt="Habitat" loading="lazy"/>
+      <div class="card-body">
+        <h3>Cozy Habitat</h3>
+        <p>A safe and comfy space for your bunny.</p>
+        <button class="card-btn">View Details →</button>
+      </div>
+    </div>
 
-            <div class ="card" data-category="fashion">
-                <img src="https://i.pinimg.com/736x/65/90/5d/65905d14a7c80bc8ec2704fa03a2099b.jpg">
-                <h3>Fashion</h3>
-                <p>Keeps your bunny fashionable.</p>
-            </div>
+    <div class="card reveal" data-category="fashion"
+         data-title="Bunny Fashion Kit"
+         data-desc="Adorable, vet-approved bunny accessories and outfits for those special photo moments."
+         data-img="https://i.pinimg.com/736x/65/90/5d/65905d14a7c80bc8ec2704fa03a2099b.jpg"
+         onclick="openModal(this)">
+      <div class="card-tag">Fashion</div>
+      <img src="https://i.pinimg.com/736x/65/90/5d/65905d14a7c80bc8ec2704fa03a2099b.jpg" alt="Fashion" loading="lazy"/>
+      <div class="card-body">
+        <h3>Fashion Kit</h3>
+        <p>Keeps your bunny fashionable & fabulous.</p>
+        <button class="card-btn">View Details →</button>
+      </div>
+    </div>
 
-        </div>
-    </section>
+  </div>
+</section>
 
-    <!-- CARE TIPS -->
-    <section class="tips">
-        <h2>Bunny Care Tips</h2>
-        <div class="cards">
-            <div class="card">
-                <h3>🥬 Proper Diet</h3>
-                <p>Hay should be 80% of your bunny’s diet.</p>
-            </div>
+<!-- CARE TIPS -->
+<section class="tips reveal" id="tips">
+  <div class="tips-header">
+    <p class="section-label">Expert Advice</p>
+    <h2 class="section-title">Bunny Care Tips</h2>
+  </div>
+  <div class="cards">
 
-            <div class="card">
-                <h3>🚫 Avoid Sugary Foods</h3>
-                <p>Too much sugar can harm your bunny.</p>
-            </div>
-        </div>
-    </section>
+    <div class="tip-card reveal" onclick="showToast('🥬 Tip saved!')">
+      <span class="tip-icon">🥬</span>
+      <h3>Proper Diet</h3>
+      <p>Hay should be 80% of your bunny's diet. Fresh leafy greens and limited pellets complete the balance.</p>
+    </div>
 
-    <!-- FOOTER -->
-    <footer>
-        <p>Made with ❤️ for bunny lovers | BunCon 2026</p>
-    </footer>
+    <div class="tip-card reveal" onclick="showToast('🚫 Tip saved!')">
+      <span class="tip-icon">🚫</span>
+      <h3>Avoid Sugary Foods</h3>
+      <p>Too much sugar can harm your bunny's sensitive gut. Fruits are treats, not staples!</p>
+    </div>
 
+    <div class="tip-card reveal" onclick="showToast('💧 Tip saved!')">
+      <span class="tip-icon">💧</span>
+      <h3>Fresh Water Daily</h3>
+      <p>Change your bunny's water every single day. A clean water bottle prevents bacterial build-up.</p>
+    </div>
+
+    <div class="tip-card reveal" onclick="showToast('🏃 Tip saved!')">
+      <span class="tip-icon">🏃</span>
+      <h3>Daily Exercise</h3>
+      <p>Bunnies need at least 3 hours of free roaming daily to stay healthy and happy.</p>
+    </div>
+
+    <div class="tip-card reveal" onclick="showToast('🩺 Tip saved!')">
+      <span class="tip-icon">🩺</span>
+      <h3>Vet Check-ups</h3>
+      <p>Annual vet visits catch issues early. Find a rabbit-savvy exotic vet near you.</p>
+    </div>
+
+    <div class="tip-card reveal" onclick="showToast('🫂 Tip saved!')">
+      <span class="tip-icon">🫂</span>
+      <h3>Gentle Bonding</h3>
+      <p>Let your bunny come to you. Earn trust slowly through calm, low-to-the-ground interactions.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about-strip reveal" id="about">
+  <p class="section-label">Our Story</p>
+  <h2 class="section-title">Made with 🐰 Love</h2>
+  <p>BunCon is a passion project by bunny lovers, for bunny lovers. We curate the best products and care advice so every fluffball lives their best life.</p>
+  <button class="btn btn-primary" onclick="showToast('💌 Newsletter coming soon!')">Join the BunFam</button>
+  <div class="social-row">
+    <div class="social-btn" onclick="showToast('🐦 Twitter coming soon!')">🐦</div>
+    <div class="social-btn" onclick="showToast('📸 Instagram coming soon!')">📸</div>
+    <div class="social-btn" onclick="showToast('🎵 TikTok coming soon!')">🎵</div>
+    <div class="social-btn" onclick="showToast('📌 Pinterest coming soon!')">📌</div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer id="footer">
+  <p>Made with <span>❤️</span> for bunny lovers &nbsp;·&nbsp; <span>BunCon 2026</span></p>
+</footer>
+
+<script>
+  // ── Cursor ──
+  const cursor = document.getElementById('cursor');
+  document.addEventListener('mousemove', e => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top  = e.clientY + 'px';
+  });
+  document.querySelectorAll('a,button,.btn,.card,.category,.tip-card,.social-btn,.nav-links li,.logo').forEach(el => {
+    el.addEventListener('mouseenter', () => cursor.classList.add('hovered'));
+    el.addEventListener('mouseleave', () => cursor.classList.remove('hovered'));
+  });
+
+  // ── Navbar scroll ──
+  window.addEventListener('scroll', () => {
+    document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 40);
+  });
+
+  // ── Smooth scroll ──
+  function scrollTo(id) {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // ── Filter cards ──
+  function filterCards(el) {
+    document.querySelectorAll('.category').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    const cat = el.dataset.category;
+    document.querySelectorAll('#cardGrid .card').forEach(card => {
+      if (cat === 'all' || card.dataset.category === cat) {
+        card.classList.remove('hidden');
+      } else {
+        card.classList.add('hidden');
+      }
+    });
+  }
+
+  // ── Modal ──
+  function openModal(card) {
+    document.getElementById('modalImg').src   = card.dataset.img   || '';
+    document.getElementById('modalTitle').textContent = card.dataset.title || card.querySelector('h3').textContent;
+    document.getElementById('modalDesc').textContent  = card.dataset.desc  || card.querySelector('p').textContent;
+    document.getElementById('modalTag').textContent   = card.dataset.category || '';
+    document.getElementById('modalOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.getElementById('modalClose').addEventListener('click', closeModal);
+  document.getElementById('modalOverlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('modalOverlay')) closeModal();
+  });
+
+  // ── Wishlist ──
+  function addWishlist() {
+    closeModal();
+    showToast('🤍 Added to wishlist!');
+  }
+
+  // ── Toast ──
+  let toastTimer;
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+  }
+
+  // ── Scroll Reveal ──
+  const revealEls = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  revealEls.forEach(el => observer.observe(el));
+</script>
 </body>
 </html>
