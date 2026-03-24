@@ -1,4 +1,4 @@
-// SMOOTH NAVIGATION USING DATA ATTRIBUTE
+// NAVIGATION
 document.querySelectorAll(".nav-links li").forEach(item => {
     item.addEventListener("click", () => {
         const section = item.getAttribute("data-section");
@@ -15,15 +15,27 @@ document.querySelector(".btn").addEventListener("click", () => {
     });
 });
 
-// CATEGORY INTERACTION (highlight effect)
-document.querySelectorAll(".category").forEach(category => {
-    category.addEventListener("click", () => {
-        category.style.background = "#cdb4db";
-        category.style.color = "white";
+// CATEGORY FILTER SYSTEM
+const categories = document.querySelectorAll(".category");
+const cards = document.querySelectorAll(".card");
 
-        setTimeout(() => {
-            category.style.background = "#f7c8e0";
-            category.style.color = "#4a4a4a";
-        }, 300);
+categories.forEach(cat => {
+    cat.addEventListener("click", () => {
+
+        const selected = cat.getAttribute("data-category");
+
+        // Highlight selected
+        categories.forEach(c => c.classList.remove("active"));
+        cat.classList.add("active");
+
+        // Filter cards
+        cards.forEach(card => {
+            if (card.getAttribute("data-category") === selected) {
+                card.style.display = "block";
+            } else {
+                card.style.display = "none";
+            }
+        });
+
     });
 });
